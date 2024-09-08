@@ -4,6 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { FcGoogle } from "react-icons/fc";
 import { motion } from "framer-motion";
+import { IoEyeSharp } from "react-icons/io5";
+
 import {
   Form,
   FormControl,
@@ -16,7 +18,8 @@ import { Input } from "@/components/ui/input";
 import useSignup from "@/hooks/api/useSignup";
 import useGoogleLogin from "@/hooks/api/useGoogleLogin";
 import { cn } from "@/lib/utils";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const formSchema = z
   .object({
@@ -35,6 +38,7 @@ const formSchema = z
 
 const SignupForm = ({ overlayMove, backendUrl }) => {
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
   const { signup, isSuccess } = useSignup();
   const { googleLogin } = useGoogleLogin();
   const form = useForm({
@@ -63,7 +67,7 @@ const SignupForm = ({ overlayMove, backendUrl }) => {
   return (
     <div
       className={cn(
-        "flex-1 h-full p-10 pt-auto flex items-center z-10 sign-up flex-col",
+        "flex-1 h-full p-10 pt-auto flex items-center z-10 sign-up flex-col shadow-xl md:shadow-none w-full",
         {
           flex: !overlayMove,
           hidden: overlayMove,
@@ -116,14 +120,25 @@ const SignupForm = ({ overlayMove, backendUrl }) => {
             control={control}
             name="password"
             render={({ field }) => (
-              <FormItem className="w-full">
+              <FormItem className="w-full relative">
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input
-                    type="password"
-                    {...field}
-                    placeholder="Enter your password"
-                  />
+                  <>
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      {...field}
+                      placeholder="Enter your password"
+                    />
+                    <IoEyeSharp
+                      className={cn(
+                        "absolute right-3 top-[2.6rem] -translate-y-1/2 cursor-pointer",
+                        {
+                          "bg-app_primary rounded-full ": showPassword,
+                        }
+                      )}
+                      onClick={() => setShowPassword(!showPassword)}
+                    />
+                  </>
                 </FormControl>
                 <FormMessage>{errors.password?.message}</FormMessage>
               </FormItem>
@@ -133,14 +148,25 @@ const SignupForm = ({ overlayMove, backendUrl }) => {
             control={control}
             name="confirmPassword"
             render={({ field }) => (
-              <FormItem className="w-full">
+              <FormItem className="w-full relative">
                 <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
-                  <Input
-                    type="password"
-                    {...field}
-                    placeholder="Confirm your password"
-                  />
+                  <>
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      {...field}
+                      placeholder="Confirm your password"
+                    />
+                    <IoEyeSharp
+                      className={cn(
+                        "absolute right-3 top-[2.6rem] -translate-y-1/2 cursor-pointer",
+                        {
+                          "bg-app_primary rounded-full ": showPassword,
+                        }
+                      )}
+                      onClick={() => setShowPassword(!showPassword)}
+                    />
+                  </>
                 </FormControl>
                 <FormMessage>{errors.confirmPassword?.message}</FormMessage>
               </FormItem>

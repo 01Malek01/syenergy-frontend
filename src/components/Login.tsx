@@ -13,8 +13,11 @@ import { motion } from "framer-motion";
 import useLogin from "@/hooks/api/useLogin";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
+import { IoEyeSharp } from "react-icons/io5";
+import { useState } from "react";
 
-const LoginForm = ({ overlayMove, backendUrl }) => {
+const LoginForm = ({ overlayMove }) => {
+  const [showPassword, setShowPassword] = useState(false);
   const { login, isSuccess } = useLogin();
   const navigate = useNavigate();
   const form = useForm({
@@ -39,10 +42,13 @@ const LoginForm = ({ overlayMove, backendUrl }) => {
 
   return (
     <div
-      className={cn("flex-1 h-full p-10 pt-auto flex items-center z-10 m-5", {
-        flex: overlayMove,
-        hidden: !overlayMove,
-      })}
+      className={cn(
+        "flex-1 h-full p-10 pt-auto flex items-center z-10 m-5 w-full shadow-xl md:shadow-none",
+        {
+          flex: overlayMove,
+          hidden: !overlayMove,
+        }
+      )}
     >
       <Form {...form}>
         <motion.form
@@ -60,7 +66,7 @@ const LoginForm = ({ overlayMove, backendUrl }) => {
                 <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input
-                    type="text"
+                    type="email"
                     {...field}
                     placeholder="Enter your email"
                   />
@@ -73,14 +79,25 @@ const LoginForm = ({ overlayMove, backendUrl }) => {
             control={control}
             name="password"
             render={({ field }) => (
-              <FormItem className="w-full">
+              <FormItem className="w-full relative">
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input
-                    type="password"
-                    {...field}
-                    placeholder="Enter your password"
-                  />
+                  <>
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      {...field}
+                      placeholder="Enter your password"
+                    />
+                    <IoEyeSharp
+                      className={cn(
+                        "absolute right-3 top-[2.6rem] -translate-y-1/2 cursor-pointer",
+                        {
+                          "bg-app_primary rounded-full ": showPassword,
+                        }
+                      )}
+                      onClick={() => setShowPassword(!showPassword)}
+                    />
+                  </>
                 </FormControl>
                 <FormMessage>{errors.password?.message}</FormMessage>
               </FormItem>

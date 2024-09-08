@@ -2,6 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from "react-toastify";
 
+type User = {
+  name: string;
+  email: string;
+  isAuthenticated: boolean;
+  _id: string;
+};
 const useCheckAuth = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const checkAuthReq = async () => {

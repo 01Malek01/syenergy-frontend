@@ -6,6 +6,8 @@ import AppRoutes from "./AppRoutes.tsx";
 import Layout from "./Layout/Layout.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import AuthContextProvider from "./Context/AuthContext.tsx";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const client = new QueryClient();
 createRoot(document.getElementById("root")!).render(
@@ -14,6 +16,7 @@ createRoot(document.getElementById("root")!).render(
       <AuthContextProvider>
         <BrowserRouter>
           <Layout>
+            <ToastContainer position="top-center" />
             <AppRoutes />
           </Layout>
         </BrowserRouter>

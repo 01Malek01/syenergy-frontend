@@ -10,18 +10,18 @@ function Auth() {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   return (
-    <div className="wrapper w-full h-screen justify-center items-center flex">
-      <div className="container w-full h-full flex flex-row justify-between items-center p-10 bg-gradient-to-r bg-surface shadow-xl relative">
+    <div className="wrapper w-full h-screen justify-center items-center flex ">
+      <div className="container w-full h-screen flex md:flex-row flex-col justify-between items-center md:p-10 bg-gradient-to-r bg-surface md:shadow-xl relative">
         <motion.div
           whileInView={{ x: overlayMove ? 0 : "100%" }}
           transition={{ duration: 0.5, ease: "easeInOut" }}
-          className="absolute w-1/2 h-full top-0 left-0 bg-app_secondary"
+          className="absolute w-1/2 h-full top-0 left-0 bg-app_secondary overlay md:block hidden"
         ></motion.div>
 
         {/* Signup side */}
         <div
           className={cn(
-            "flex-1 h-full left-side z-10 m-10 flex flex-col gap-4 items-center justify-center order-1",
+            "flex-1 h-full left-side z-10 md:m-10 p-10 md:p-0 flex flex-col gap-4 items-center justify-center md:order-1 w-full bg-app_secondary md:bg-transparent",
             {
               flex: !overlayMove,
               hidden: overlayMove,
@@ -45,7 +45,7 @@ function Auth() {
         {/* Login side */}
         <div
           className={cn(
-            "flex-1 h-full left-side flex flex-col gap-4 items-center justify-center z-10 p-10",
+            "flex-1 h-full left-side flex flex-col gap-4 items-center justify-center z-10 p-10 md:bg-transparent bg-app_secondary ",
             {
               flex: overlayMove,
               hidden: !overlayMove,
@@ -58,6 +58,7 @@ function Auth() {
             <span className="text-blue-500 font-semibold text-md">Synergy</span>
             !
           </span>
+
           <Button
             onClick={() => setOverlayMove((prev) => !prev)}
             className="mt-5 rounded-lg bg-app_primary hover:bg-blue-700"
