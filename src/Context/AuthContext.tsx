@@ -1,12 +1,17 @@
-import useCheckAuth from "@/hooks/api/useCheckAuth";
-import { useState, createContext, useContext, useEffect } from "react";
-const AuthContext = createContext(null);
-
-
-function AuthContextProvider({ children }) {
+import useCheckAuth from "@/hooks/api/auth/useCheckAuth";
+import {
+  useState,
+  createContext,
+  useContext,
+  useEffect,
+  ReactNode,
+} from "react";
+import { AuthContextType } from "types";
+const AuthContext = createContext<AuthContextType | null>(null);
+function AuthContextProvider({ children }: { children: ReactNode }) {
   const { user: authUser } = useCheckAuth();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<AuthContextType["user"]>(null);
 
   useEffect(() => {
     if (authUser) {

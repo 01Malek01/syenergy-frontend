@@ -15,8 +15,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import useSignup from "@/hooks/api/useSignup";
-import useGoogleLogin from "@/hooks/api/useGoogleLogin";
+import useSignup from "@/hooks/api/auth/useSignup";
+import useGoogleLogin from "@/hooks/api/auth/useGoogleLogin";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";

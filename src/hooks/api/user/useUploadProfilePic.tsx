@@ -3,11 +3,13 @@ import axios from "axios";
 
 export const useUploadProfilePic = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const uploadProfilePicReq = async (file: FormData) => {
-    const res = await axios.post(
+  const uploadProfilePicReq = async (formData: FormData) => {
+    const res = await axios.put(
       `${backendUrl}/user/profile/uploadProfilePic`,
-      file,
+      formData,
+
       {
+        withCredentials: true,
         headers: {
           "Content-Type": "multipart/form-data",
         },

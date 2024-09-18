@@ -10,13 +10,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
-import useLogin from "@/hooks/api/useLogin";
+import useLogin from "@/hooks/api/auth/useLogin";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { IoEyeSharp } from "react-icons/io5";
 import { useState } from "react";
 
-const LoginForm = ({ overlayMove }) => {
+const LoginForm = ({ overlayMove }: { overlayMove: boolean }) => {
   const [showPassword, setShowPassword] = useState(false);
   const { login, isSuccess } = useLogin();
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ const LoginForm = ({ overlayMove }) => {
     formState: { errors },
   } = form;
 
-  const handleLogin = (data) => {
+  const handleLogin = (data: { email: string; password: string }) => {
     login(data);
     if (isSuccess) {
       navigate("/auth");

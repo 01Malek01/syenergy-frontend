@@ -2,14 +2,15 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const useEditUsername = () => {
+const useEditProfile = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const editUsernameReq = async (data) => {
+  const editProfileReq = async (data) => {
     try {
       const res = await axios.put(
         `${backendUrl}/user/profile`,
         {
-          name: data.name,
+          name: data?.name,
+          bio: data?.bio,
         },
         {
           withCredentials: true,
@@ -22,19 +23,17 @@ const useEditUsername = () => {
   };
 
   const {
-    mutateAsync: editUsername,
+    mutateAsync: editProfile,
     isSuccess,
     isPending,
   } = useMutation({
-    mutationFn: editUsernameReq,
-    onSuccess: () => {
-      toast.success("Username updated successfully");
-    },
+    mutationFn: editProfileReq,
+
     onError: () => {
-      toast.error("Username update failed. Please try again");
+      toast.error("Profile update failed. Please try again");
     },
   });
 
-  return { editUsername, isSuccess, isPending };
+  return { editProfile, isSuccess, isPending };
 };
-export default useEditUsername;
+export default useEditProfile;
