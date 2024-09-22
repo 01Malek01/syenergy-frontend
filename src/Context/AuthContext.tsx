@@ -17,7 +17,6 @@ function AuthContextProvider({ children }: { children: ReactNode }) {
     if (authUser) {
       setIsAuthenticated(true);
       setUser(authUser);
-      console.log("auth state", authUser.isAuthenticated);
     }
   }, [authUser, isAuthenticated]);
   return (

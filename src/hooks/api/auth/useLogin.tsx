@@ -10,19 +10,21 @@ const useLogin = () => {
       const res = await axios.post(`${backendUrl}/auth/login`, data, {
         withCredentials: true,
       });
+
       return res.data;
     } catch (err) {
       toast.error(err);
+      throw err;
     }
   };
   const { mutateAsync: login, isSuccess } = useMutation({
     mutationFn: loginReq,
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast.success("Login Successful");
       navigate("/");
     },
     onError: () => {
-      toast.error("Login Failed. Please try again");
+      toast.error("Either email or password is incorrect");
     },
   });
   return { login, isSuccess };

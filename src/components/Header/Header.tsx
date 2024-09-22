@@ -18,7 +18,7 @@ export default function Header() {
         <div className="relative">
           <img
             onClick={() => setShowList((prev) => !prev)}
-            src="/logo.jpg"
+            src={user?.profilePic}
             alt="profile"
             className="w-10 h-10 rounded-full shadow-md cursor-pointer"
           />

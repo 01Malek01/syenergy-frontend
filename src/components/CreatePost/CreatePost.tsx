@@ -6,6 +6,7 @@ import { Button } from "../ui/button";
 import useCreatePost from "@/hooks/api/post/useCreatePost";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
+import { Textarea } from "../ui/textarea";
 
 function CreatePost() {
   const { createPost, isPending, isSuccess, isError } = useCreatePost();
@@ -57,11 +58,11 @@ function CreatePost() {
             render={() => (
               <FormItem className="">
                 <FormLabel>Content</FormLabel>
-                <textarea
+                <Textarea
                   {...register("content")}
                   placeholder="What would you like to share?"
                   className="w-full h-32 text-lg px-4 py-2 border border-gray-300 rounded-lg"
-                  maxLength={300} // Optional: Limit the character length
+                  maxLength={300} 
                 />
                 <FormMessage>{errors.content?.message}</FormMessage>
               </FormItem>
