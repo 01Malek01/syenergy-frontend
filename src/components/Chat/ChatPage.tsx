@@ -28,7 +28,6 @@ export default function ChatPage({
   messages: any;
   setMessages: any;
   setOpenChat: any;
-
   openChat: boolean;
 }) {
   const form = useForm({ initialValues: { message: "" } });
@@ -39,6 +38,7 @@ export default function ChatPage({
   const { messages: fetchedMessages, isLoading } = useGetMessages(
     selectedUser?._id
   );
+
   const sendMessageHandler = async function (message: string) {
     reset();
     const res = await sendMessage({
@@ -54,24 +54,21 @@ export default function ChatPage({
       messagesEnd.current.scrollIntoView({ behavior: "smooth" });
     }
   };
+
   useEffect(() => {
     if (fetchedMessages) {
       setMessages(fetchedMessages?.messages);
     }
   }, [fetchedMessages, selectedUser?.name, setMessages]);
+
   useEffect(() => {
     scrollIntoView();
-  }, [messages]);
+  }, [messages, openChat]);
+
   return (
     openChat && (
-      <div className="flex flex-col gap-4 h-screen relative  ">
-        <div className=" flex-col flex gap-4  overflow-y-auto h-[70vh] ">
-          <Button
-            className="fixed top-52 right-[19rem] opacity-75 "
-            onClick={() => setOpenChat(false)}
-          >
-            Back
-          </Button>
+      <div className="flex flex-col gap-4  relative">
+        <div className="flex-col flex gap-4 overflow-y-auto h-[70vh]">
           <h1 className="font-thin text-2xl mb-10 text-center">
             You're Chatting with <br />
             {selectedUser?.name}
@@ -85,7 +82,7 @@ export default function ChatPage({
             messages?.map((message: any, index: number) => (
               <Card
                 key={index}
-                className={cn("sent  p-2", {
+                className={cn("sent p-2", {
                   "self-start bg-app_primary/90 my-1":
                     message?.sender === authUser?._id,
                   "self-end": message?.sender !== authUser?._id,
@@ -95,8 +92,8 @@ export default function ChatPage({
               </Card>
             ))
           )}
-          {/* dummy div to scroll */}
-          <div className="hidden" ref={messagesEnd}></div>
+          {/* Dummy div to scroll to (no longer hidden) */}
+          <div ref={messagesEnd}></div>
         </div>
         <Form {...form}>
           <form
@@ -115,11 +112,17 @@ export default function ChatPage({
                 )}
               />
             </FormItem>
-            <Button className="self-end ml-5 " type="submit">
+            <Button className="self-end ml-5" type="submit">
               <IoSend className="text-2xl" />
             </Button>
           </form>
         </Form>
+        <Button
+          className=" top-52 right-[19rem] opacity-75"
+          onClick={() => setOpenChat(false)}
+        >
+          Back
+        </Button>
       </div>
     )
   );

@@ -5,7 +5,13 @@ const useDislike = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const dislikePostReq = async (postId: string) => {
     await axios
-      .patch(`${backendUrl}/posts/${postId}/dislike`)
+      .patch(
+        `${backendUrl}/posts/${postId}/dislike`,
+        {},
+        {
+          withCredentials: true,
+        }
+      )
       .then((res) => {
         console.log(res.data);
       })

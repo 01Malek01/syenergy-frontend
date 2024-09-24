@@ -31,7 +31,9 @@ function Profile() {
       setUserPostsState(userPosts);
     }
   }, [userPosts, isLoadingPosts]);
-
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
   const saveName = async (data: z.infer<typeof inputSchema>) => {
     await editProfile({ name: data.name });
     setUser((prevUser) => ({ ...prevUser, name: data.name }));
@@ -153,6 +155,21 @@ function Profile() {
                 className="rounded-full shadow-sm"
               />
             )}
+          </div>
+          {/* Followers and Following */}
+          <div className="flex items-center justify-around gap-10 text-center">
+            <div className="followers">
+              <span className="text-xl font-semibold">
+                {user?.followers?.length || 0}
+              </span>
+              <p className="text-sm text-gray-600">Followers</p>
+            </div>
+            <div className="following">
+              <span className="text-xl font-semibold">
+                {user?.following?.length || 0}
+              </span>
+              <p className="text-sm text-gray-600">Following</p>
+            </div>
           </div>
         </div>
 

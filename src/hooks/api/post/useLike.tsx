@@ -5,10 +5,15 @@ const useLike = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const likePostReq = async (postId: string) => {
     await axios
-      .patch(`${backendUrl}/posts/${postId}/like`)
-      .then((res) => {
-        console.log(res.data);
-      })
+      .patch(
+        `${backendUrl}/posts/${postId}/like`,
+        {},
+
+        {
+          withCredentials: true,
+        }
+      )
+
       .catch((err) => {
         console.log(err);
       });

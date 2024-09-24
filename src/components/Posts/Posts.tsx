@@ -28,6 +28,7 @@ function Posts() {
           author={post.author.name}
           authorId={post.author._id}
           publishDate={post.createdAt}
+          likesCount={post?.likes?.length}
           likes={post.likes}
           postId={post._id}
         />

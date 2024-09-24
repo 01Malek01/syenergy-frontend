@@ -3,17 +3,50 @@ import { cn } from "../../lib/utils";
 import { IoMdCloseCircle } from "react-icons/io";
 import useGetUserById from "@/hooks/api/user/useGetUserByID";
 import { toast } from "react-toastify";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/Context/AuthContext";
+import useFollowUser from "@/hooks/api/user/useFollowUser";
+import useUnFollowUser from "@/hooks/api/user/useUnfollowUser";
 
 function UserProfile() {
   const [showPhoto, setShowPhoto] = useState(false);
   const { user, isLoading } = useGetUserById();
   const [userState, setUserState] = useState(user);
+  const { user: authUser } = useAuth();
+  const { followUser } = useFollowUser();
+  const { unFollowUser } = useUnFollowUser();
+  const [followed, setFollowed] = useState(false);
+
   useEffect(() => {
     if (isLoading) toast.info("Loading...");
     setUserState(user);
     console.log("user", user);
     return () => toast.dismiss();
   }, [user, isLoading]);
+  useEffect(() => {
+    if (authUser) {
+      if (user?.followers?.includes(authUser._id)) {
+        setFollowed(true);
+      } else {
+        setFollowed(false);
+      }
+    }
+  }, [authUser, user]);
+  const followHandler = async () => {
+    if (authUser) {
+      if (followed) {
+        await unFollowUser({
+          userId: userState?._id,
+        });
+        setFollowed(false);
+      } else {
+        await followUser({
+          userId: userState?._id,
+        });
+        setFollowed(true);
+      }
+    }
+  };
   return (
     <div className="wrapper p-10 mt-10 bg-app_surface">
       <div className="container flex flex-col gap-5 w-full">
@@ -25,7 +58,7 @@ function UserProfile() {
           {/* Profile Image */}
           <div
             onClick={() => setShowPhoto(true)}
-            className="profile-image size-[200px] text-center flex justify-center rounded-full relative cursor-pointer  "
+            className="profile-image size-[200px] text-center flex justify-center rounded-full relative cursor-pointer"
           >
             <img
               src={userState?.profilePic}
@@ -36,7 +69,7 @@ function UserProfile() {
           {/* show Photo */}
           <div
             className={cn(
-              "show-photo flex w-full h-screen items-center justify-center  top-10 z-10 bg-black/50 mx-auto fixed ",
+              "show-photo flex w-full h-screen items-center justify-center top-10 z-10 bg-black/50 mx-auto fixed ",
               {
                 hidden: !showPhoto,
               }
@@ -51,17 +84,37 @@ function UserProfile() {
             <img
               src={`/logo.jpg`}
               alt="profile"
-              className="rounded-full shadow-sm  size-[500px] text-center "
+              className="rounded-full shadow-sm size-[500px] text-center"
             />
           </div>
+        </div>
+
+        {/* Followers and Following */}
+        <div className="flex items-center justify-center gap-10 text-center mt-5">
+          <div className="followers">
+            <span className="text-xl font-semibold">
+              {userState?.followers?.length || 0}
+            </span>
+            <p className="text-sm text-gray-600">Followers</p>
+          </div>
+          <div className="following">
+            <span className="text-xl font-semibold">
+              {userState?.following?.length || 0}
+            </span>
+            <p className="text-sm text-gray-600">Following</p>
+          </div>
+          {authUser?._id !== userState?._id && (
+            <Button onClick={followHandler} className="w-36">
+              {followed ? "Unfollow" : "Follow"}
+            </Button>
+          )}
         </div>
 
         <div className="divider w-full h-[1px] bg-black/10 my-6 "></div>
 
         <div className="lower flex flex-col gap-10">
           <span className="text-2xl font-semibold text-center">Bio</span>
-
-          <p className="bio text-center tracking-tight font-md group  flex items-center justify-center gap-2">
+          <p className="bio text-center tracking-tight font-md group flex items-center justify-center gap-2">
             {userState?.bio}
           </p>
         </div>

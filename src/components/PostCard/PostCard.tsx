@@ -11,21 +11,23 @@ import { formatDate } from "@/utils";
 import { SlLike } from "react-icons/sl";
 import { FaRegShareSquare } from "react-icons/fa";
 import { FaRegCommentAlt } from "react-icons/fa";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import useLike from "@/hooks/api/post/useLike";
 import useDislike from "@/hooks/api/post/useDislike";
 import Comments from "../Comments/Comments";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/Context/AuthContext";
 
 type Props = {
   title: string;
   content: string;
   author: string;
   publishDate: string;
-  likes: number;
+  likes: [string];
   postId?: string;
   authorId: string;
+  likesCount?: number;
 };
 
 export default function PostCard({
@@ -36,13 +38,20 @@ export default function PostCard({
   likes,
   postId,
   authorId,
+  likesCount,
 }: Props) {
   const [liked, setLiked] = useState(false);
   const { likePost } = useLike();
   const { dislikePost } = useDislike();
-  const [postLikes, setPostLikes] = useState(likes);
+  const [postLikes, setPostLikes] = useState(likesCount || 0);
   const [showComments, setShowComments] = useState(false);
+  const { user: authUser } = useAuth();
   const navigate = useNavigate();
+  useEffect(() => {
+    if (likes.includes(authUser._id)) {
+      setLiked(true);
+    }
+  }, [authUser, likes]);
   return (
     <Card className="w-full p-4 shadow-md space-y-8 mb-16 ">
       <CardHeader>
