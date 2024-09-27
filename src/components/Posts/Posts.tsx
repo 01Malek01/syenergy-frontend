@@ -25,11 +25,10 @@ function Posts() {
           key={post._id}
           title={post.title}
           content={post.content}
-          author={post.author.name}
-          authorId={post.author._id}
+          author={post?.author?.name}
+          authorId={post?.author?._id}
           publishDate={post.createdAt}
-          likesCount={post?.likes?.length}
-          likes={post.likes}
+          likes={post?.likes}
           postId={post._id}
         />
       ))}

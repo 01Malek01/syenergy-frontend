@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 
 const useUnFollowUser = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const unFollowUserReq = async (data) => {
+  const unFollowUserReq = async (data: { userId: string }) => {
     try {
       const res = await axios.patch(
         `${backendUrl}/user/${data.userId}/unfollow`,

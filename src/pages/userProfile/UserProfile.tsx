@@ -1,26 +1,21 @@
 import { useEffect, useState } from "react";
 import { cn } from "../../lib/utils";
 import { IoMdCloseCircle } from "react-icons/io";
-import useGetUserById from "@/hooks/api/user/useGetUserByID";
+import useGetUserById from "@/hooks/api/user/useGetUserById";
 import { toast } from "react-toastify";
-import { Button } from "@/components/ui/button";
 import { useAuth } from "@/Context/AuthContext";
-import useFollowUser from "@/hooks/api/user/useFollowUser";
-import useUnFollowUser from "@/hooks/api/user/useUnfollowUser";
+import FollowButton from "@/components/FollowButton/FollowButton";
 
 function UserProfile() {
   const [showPhoto, setShowPhoto] = useState(false);
   const { user, isLoading } = useGetUserById();
   const [userState, setUserState] = useState(user);
   const { user: authUser } = useAuth();
-  const { followUser } = useFollowUser();
-  const { unFollowUser } = useUnFollowUser();
   const [followed, setFollowed] = useState(false);
 
   useEffect(() => {
     if (isLoading) toast.info("Loading...");
     setUserState(user);
-    console.log("user", user);
     return () => toast.dismiss();
   }, [user, isLoading]);
   useEffect(() => {
@@ -32,21 +27,21 @@ function UserProfile() {
       }
     }
   }, [authUser, user]);
-  const followHandler = async () => {
-    if (authUser) {
-      if (followed) {
-        await unFollowUser({
-          userId: userState?._id,
-        });
-        setFollowed(false);
-      } else {
-        await followUser({
-          userId: userState?._id,
-        });
-        setFollowed(true);
-      }
-    }
-  };
+  // const followHandler = async () => {
+  //   if (authUser) {
+  //     if (followed) {
+  //       await unFollowUser({
+  //         userId: userState?._id,
+  //       });
+  //       setFollowed(false);
+  //     } else {
+  //       await followUser({
+  //         userId: userState?._id,
+  //       });
+  //       setFollowed(true);
+  //     }
+  //   }
+  // };
   return (
     <div className="wrapper p-10 mt-10 bg-app_surface">
       <div className="container flex flex-col gap-5 w-full">
@@ -103,11 +98,12 @@ function UserProfile() {
             </span>
             <p className="text-sm text-gray-600">Following</p>
           </div>
-          {authUser?._id !== userState?._id && (
-            <Button onClick={followHandler} className="w-36">
-              {followed ? "Unfollow" : "Follow"}
-            </Button>
-          )}
+
+          <FollowButton
+            targetUserId={userState?._id}
+            followed={followed}
+            setFollowed={setFollowed}
+          />
         </div>
 
         <div className="divider w-full h-[1px] bg-black/10 my-6 "></div>

@@ -1,33 +1,29 @@
-import { useAuth } from "@/Context/AuthContext";
-import useGetNotifications from "@/hooks/api/user/useGetNotifications";
-import { useEffect, useState } from "react";
-import io from "socket.io-client";
-
-const socket = io(import.meta.env.VITE_BACKEND);
-function Notifications() {
-  const [notificationsState, setNotificationsState] = useState([]);
-  const { user: authUser } = useAuth();
-  const { notifications } = useGetNotifications();
-
-  useEffect(() => {
-    console.log("notifications", notifications);
-  }, [notifications]);
-  useEffect(() => {
-    socket.on("followNotification", (data) => {
-      console.log(data);
-      if (authUser?._id === data?.senderId) {
-        setNotificationsState((prev) => [...prev, data.message]);
-      }
-    });
-  }, [authUser?._id]);
+function Notifications({
+  notifications,
+  clear,
+}: {
+  notifications: Notification[];
+  clear: () => void;
+}) {
   return (
     <div className="container">
-      {notificationsState?.length > 0 ? (
-        notificationsState?.map((notification, index) => {
+      {notifications?.length > 0 ? (
+        notifications?.map((notification: Notification, index: number) => {
           return (
-            <div className="notification" key={index}>
-              <p>{notification}</p>
-            </div>
+            <>
+              <div
+                className="notification border-t-2 border-b-2 border-blue-500 hover:bg-slate-300"
+                key={index}
+              >
+                <p>{notification?.message}</p>
+              </div>
+              <span
+                className="text-sm text-red-600 cursor-pointer hover:underline"
+                onClick={clear}
+              >
+                Clear all
+              </span>
+            </>
           );
         })
       ) : (

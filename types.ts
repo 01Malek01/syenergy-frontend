@@ -26,7 +26,7 @@ export interface Post {
 export type AuthContextType = {
   isAuthenticated: boolean;
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
-  user?: User | null;
+  user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
 };
 
@@ -36,6 +36,10 @@ export type User = {
   isAuthenticated?: boolean;
   _id?: string;
   bio?: string;
+  profilePic?: string;
+  following?: string[];
+  followers?: string[];
+  createdAt?: string;
 };
 
 export type Comment = {
@@ -58,4 +62,13 @@ export interface PostContextValue {
   posts: Post[];
   isLoading: boolean;
   setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
+}
+
+export interface Notification {
+  _id: string;
+  message: string;
+  createdAt: string;
+  read: boolean;
+  user?: string;
+  type: string;
 }

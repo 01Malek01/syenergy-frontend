@@ -9,20 +9,23 @@ import AuthContextProvider from "./Context/AuthContext.tsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import PostsProvider from "./Context/PostsContext.tsx";
+import { NotificationContextProvider } from "./Context/NotificationContext.tsx";
 
 const client = new QueryClient();
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={client}>
       <AuthContextProvider>
-        <PostsProvider>
-          <BrowserRouter>
-            <Layout>
-              <ToastContainer position="top-center" />
-              <AppRoutes />
-            </Layout>
-          </BrowserRouter>
-        </PostsProvider>
+        <NotificationContextProvider>
+          <PostsProvider>
+            <BrowserRouter>
+              <Layout>
+                <ToastContainer position="top-center" />
+                <AppRoutes />
+              </Layout>
+            </BrowserRouter>
+          </PostsProvider>
+        </NotificationContextProvider>
       </AuthContextProvider>
     </QueryClientProvider>
   </StrictMode>

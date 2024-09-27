@@ -38,17 +38,17 @@ export default function PostCard({
   likes,
   postId,
   authorId,
-  likesCount,
 }: Props) {
   const [liked, setLiked] = useState(false);
   const { likePost } = useLike();
   const { dislikePost } = useDislike();
-  const [postLikes, setPostLikes] = useState(likesCount || 0);
+  const [postLikes, setPostLikes] = useState(likes?.length || 0);
   const [showComments, setShowComments] = useState(false);
   const { user: authUser } = useAuth();
   const navigate = useNavigate();
+
   useEffect(() => {
-    if (likes.includes(authUser._id)) {
+    if (likes.includes(authUser?._id)) {
       setLiked(true);
     }
   }, [authUser, likes]);

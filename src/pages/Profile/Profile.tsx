@@ -150,7 +150,7 @@ function Profile() {
               <div className="loader"></div>
             ) : (
               <img
-                src={`${user?.profilePic}`}
+                src={`${user?.profilePic || "/logo.jpg"}`}
                 alt="profile"
                 className="rounded-full shadow-sm"
               />

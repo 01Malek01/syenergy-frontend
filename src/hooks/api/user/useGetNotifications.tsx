@@ -19,6 +19,7 @@ const useGetNotifications = () => {
   const { data: notifications, isLoading } = useQuery({
     queryFn: getNotificationsReq,
     queryKey: ["notifications"],
+    refetchInterval: 50000, // 5 minutes
   });
 
   return { notifications, isLoading };
