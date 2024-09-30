@@ -10,23 +10,26 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import PostsProvider from "./Context/PostsContext.tsx";
 import { NotificationContextProvider } from "./Context/NotificationContext.tsx";
+import SocketProvider from "./Context/SocketContext.tsx";
 
 const client = new QueryClient();
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={client}>
-      <AuthContextProvider>
-        <NotificationContextProvider>
-          <PostsProvider>
-            <BrowserRouter>
-              <Layout>
-                <ToastContainer position="top-center" />
-                <AppRoutes />
-              </Layout>
-            </BrowserRouter>
-          </PostsProvider>
-        </NotificationContextProvider>
-      </AuthContextProvider>
+      <SocketProvider>
+        <AuthContextProvider>
+          <NotificationContextProvider>
+            <PostsProvider>
+              <BrowserRouter>
+                <Layout>
+                  <ToastContainer position="top-center" />
+                  <AppRoutes />
+                </Layout>
+              </BrowserRouter>
+            </PostsProvider>
+          </NotificationContextProvider>
+        </AuthContextProvider>
+      </SocketProvider>
     </QueryClientProvider>
   </StrictMode>
 );

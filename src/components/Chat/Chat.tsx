@@ -1,39 +1,52 @@
 import { useAuth } from "@/Context/AuthContext";
 import { useEffect, useState } from "react";
-import io from "socket.io-client";
 import { Card, CardHeader } from "../ui/card";
 import ChatPage from "./ChatPage";
 import { cn } from "@/lib/utils";
 import useGetFriends from "@/hooks/api/user/useGetFriends";
-
-const socket = io(import.meta.env.VITE_BACKEND);
+import { useSocket } from "@/Context/SocketContext";
 
 export default function Chat() {
   const { user } = useAuth();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [messages, setMessages] = useState<any>([]);
   const [friendsState, setFriendsState] = useState<any>([]);
   const { friends, isLoading: friendsLoading } = useGetFriends();
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [openChat, setOpenChat] = useState(false);
-
-  useEffect(() => {
-    if (user?._id !== undefined || user?._id !== null) {
-      socket.emit("register", user?._id);
-    }
-    socket.on("receiveMessage", (message) => {
-      setMessages((prev: any) => [...prev, message?.newMessage]);
-    });
-    return () => {
-      socket.off("receiveMessage");
-    };
-  }, [user?._id]);
+  const [newMessages, setNewMessages] = useState<
+    { sender: string; content: string }[]
+  >([]);
+  const { socket } = useSocket();
 
   useEffect(() => {
     if (!friendsLoading) {
       setFriendsState(friends);
     }
   }, [friends, friendsLoading]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("receiveMessage", (message) => {
+        if (message.sender !== selectedUser?._id) {
+          // Only track new messages if it's from a different user than the one you're currently chatting with
+          setNewMessages((prev) => [...prev, message]);
+        } else {
+          // If the message is from the selected user, add it directly to the chat
+          setMessages((prevMessages) => [...prevMessages, message]);
+        }
+      });
+    }
+
+    return () => {
+      socket?.off("receiveMessage");
+    };
+  }, [socket, selectedUser]);
+
+  const removeNotification = (senderId: string) => {
+    setNewMessages((prevMessages) =>
+      prevMessages.filter((message) => message.sender !== senderId)
+    );
+  };
 
   return (
     <div className="chat-wrapper">
@@ -42,7 +55,6 @@ export default function Chat() {
           <ChatPage
             selectedUser={selectedUser}
             senderId={user?._id}
-            socket={socket}
             messages={messages}
             setMessages={setMessages}
             setOpenChat={setOpenChat}
@@ -52,25 +64,28 @@ export default function Chat() {
             <h1 className="font-thin text-2xl mb-10 text-center">Chats</h1>
             <div className="users">
               {friendsLoading ? (
-                // Display loading indicator while friends are being fetched
                 <div className="flex justify-center items-center">
                   <span>Loading friends...</span>
-                  {/* You can replace this with a spinner */}
                 </div>
               ) : friendsState?.length > 0 ? (
-                // Display the friends list once loading is done
                 friendsState
                   ?.filter((u: any) => u?._id !== user?._id)
-                  .map((user: any) => (
+                  .map((friend: any) => (
                     <Card
-                      key={user?._id}
+                      key={friend?._id}
                       onClick={() => {
-                        setSelectedUser(user);
+                        setSelectedUser(friend);
                         setOpenChat(true);
+                        removeNotification(friend?._id); // Remove notification when opening chat with the user
                       }}
                       className="cursor-pointer my-5 hover:bg-slate-600/10"
                     >
-                      <CardHeader>{user?.name}</CardHeader>
+                      <CardHeader>{friend?.name}</CardHeader>
+                      <span>
+                        {newMessages.some((m) => m.sender === friend?._id)
+                          ? "New message"
+                          : ""}
+                      </span>
                     </Card>
                   ))
               ) : (

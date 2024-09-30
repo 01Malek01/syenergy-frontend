@@ -12,22 +12,24 @@ function Notifications({
           return (
             <>
               <div
-                className="notification border-t-2 border-b-2 border-blue-500 hover:bg-slate-300"
+                className="notification border-t-2 border-b-2 border-blue-500 hover:bg-slate-300 mb-3"
                 key={index}
               >
                 <p>{notification?.message}</p>
               </div>
-              <span
-                className="text-sm text-red-600 cursor-pointer hover:underline"
-                onClick={clear}
-              >
-                Clear all
-              </span>
             </>
           );
         })
       ) : (
         <p className="text-center text-sm">No new notifications</p>
+      )}
+      {notifications?.length > 0 && (
+        <span
+          className="text-sm text-red-600 cursor-pointer hover:underline"
+          onClick={clear}
+        >
+          Clear all
+        </span>
       )}
     </div>
   );

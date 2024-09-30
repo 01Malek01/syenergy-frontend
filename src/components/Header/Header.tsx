@@ -32,6 +32,7 @@ export default function Header() {
     await clearNotifications();
     setNotificationsState([]);
   };
+
   return (
     <div className="w-full h-20 flex items-center justify-between px-10 ">
       <Link to={"/"}>

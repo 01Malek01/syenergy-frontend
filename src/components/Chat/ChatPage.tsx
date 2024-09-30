@@ -9,6 +9,7 @@ import useGetMessages from "@/hooks/api/chat/useGetMessages";
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/Context/AuthContext";
+import { useSocket } from "@/Context/SocketContext";
 
 export default function ChatPage({
   selectedUser,
@@ -38,7 +39,7 @@ export default function ChatPage({
   const { messages: fetchedMessages, isLoading } = useGetMessages(
     selectedUser?._id
   );
-
+  const { socket } = useSocket();
   const sendMessageHandler = async function (message: string) {
     reset();
     const res = await sendMessage({
@@ -54,7 +55,11 @@ export default function ChatPage({
       messagesEnd.current.scrollIntoView({ behavior: "smooth" });
     }
   };
-
+  useEffect(() => {
+    socket?.on("receiveMessage", (message) => {
+      setMessages((prev: any) => [...prev, message]);
+    });
+  }, [socket]);
   useEffect(() => {
     if (fetchedMessages) {
       setMessages(fetchedMessages?.messages);

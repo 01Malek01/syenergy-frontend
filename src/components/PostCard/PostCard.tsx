@@ -66,7 +66,7 @@ export default function PostCard({
 
       <CardContent>{content}</CardContent>
       <CardFooter className="flex justify-between  ">
-        <div className="text-xs font-thin order-1 self-end ">
+        <div className="lg:text-xs text-[10px] ml-3 font-thin order-1 self-end ">
           published {formatDate(publishDate)}
         </div>
         {/* interactions section */}
