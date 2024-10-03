@@ -21,13 +21,16 @@ export interface Post {
   createdAt: string;
   likes: number;
   postId?: string;
+  isShared?: boolean;
+  sharedFrom?: string;
 }
 
 export type AuthContextType = {
   isAuthenticated: boolean;
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
-  user: User | null;
+  user: User | null | undefined;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  isAuthLoading: boolean;
 };
 
 export type User = {
@@ -71,4 +74,26 @@ export interface Notification {
   read: boolean;
   user?: string;
   type: string;
+}
+
+export type AuthUser = {
+  name: string;
+  email: string;
+  isAuthenticated: boolean;
+  _id: string;
+  bio: string;
+  profilePic: string;
+  following: string[];
+  followers: string[];
+  createdAt: string;
+};
+
+export interface Message {
+  content: string;
+  sender: string;
+  receiver: string;
+  readBy: string[];
+  _id: string;
+  conversationId: string;
+  createdAt: string;
 }

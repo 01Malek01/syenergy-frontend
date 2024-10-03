@@ -16,8 +16,8 @@ const client = new QueryClient();
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={client}>
-      <SocketProvider>
-        <AuthContextProvider>
+      <AuthContextProvider>
+        <SocketProvider>
           <NotificationContextProvider>
             <PostsProvider>
               <BrowserRouter>
@@ -28,8 +28,8 @@ createRoot(document.getElementById("root")!).render(
               </BrowserRouter>
             </PostsProvider>
           </NotificationContextProvider>
-        </AuthContextProvider>
-      </SocketProvider>
+        </SocketProvider>
+      </AuthContextProvider>
     </QueryClientProvider>
   </StrictMode>
 );

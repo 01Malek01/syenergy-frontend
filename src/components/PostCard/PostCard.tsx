@@ -6,11 +6,9 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { motion } from "framer-motion";
 import { formatDate } from "@/utils";
 import { SlLike } from "react-icons/sl";
-import { FaRegShareSquare } from "react-icons/fa";
-import { FaRegCommentAlt } from "react-icons/fa";
+import { FaRegShareSquare, FaRegCommentAlt } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import useLike from "@/hooks/api/post/useLike";
@@ -18,16 +16,21 @@ import useDislike from "@/hooks/api/post/useDislike";
 import Comments from "../Comments/Comments";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/Context/AuthContext";
+import useSharePost from "@/hooks/api/post/useSharePost";
+import { toast } from "react-toastify";
 
+// Define the props type
 type Props = {
   title: string;
   content: string;
   author: string;
   publishDate: string;
-  likes: [string];
-  postId?: string;
+  likes: string[]; // Changed from [string] to string[]
+  postId: string;
   authorId: string;
   likesCount?: number;
+  isShared?: boolean;
+  sharedFrom?: string;
 };
 
 export default function PostCard({
@@ -38,6 +41,8 @@ export default function PostCard({
   likes,
   postId,
   authorId,
+  isShared,
+  sharedFrom,
 }: Props) {
   const [liked, setLiked] = useState(false);
   const { likePost } = useLike();
@@ -46,31 +51,57 @@ export default function PostCard({
   const [showComments, setShowComments] = useState(false);
   const { user: authUser } = useAuth();
   const navigate = useNavigate();
+  const { isError, sharePost, isSuccess } = useSharePost();
+
+  // Function to handle sharing a post
+  const sharePostHandler = () => {
+    if (authUser) {
+      sharePost({ postId: postId || "" });
+    }
+  };
 
   useEffect(() => {
-    if (likes.includes(authUser?._id)) {
+    if (isSuccess) {
+      toast.success("Post shared successfully");
+    }
+    if (isError) {
+      toast.error("Something went wrong");
+    }
+  }, [isSuccess, isError]);
+
+  useEffect(() => {
+    if (authUser && likes.includes(authUser._id)) {
       setLiked(true);
     }
   }, [authUser, likes]);
+
   return (
-    <Card className="w-full p-4 shadow-md space-y-8 mb-16 ">
+    <Card className="w-full p-4 shadow-md space-y-8 mb-16">
       <CardHeader>
-        <CardTitle className="text-3xl font-extrabold">{title}</CardTitle>
+        <CardTitle className="md:text-3xl font-extrabold text-xl">
+          {title}
+        </CardTitle>
         <CardDescription
           onClick={() => navigate(`/users/${authorId}/profile`)}
           className="font-semibold text-xs cursor-pointer"
         >
-          {author}
+          <span>{author}</span>
+          {isShared && (
+            <span className="text-sm font-thin">
+              {" "}
+              shared a post from {sharedFrom}
+            </span>
+          )}
         </CardDescription>
       </CardHeader>
 
-      <CardContent>{content}</CardContent>
-      <CardFooter className="flex justify-between  ">
-        <div className="lg:text-xs text-[10px] ml-3 font-thin order-1 self-end ">
+      <CardContent className="text-sm md:text-lg">{content}</CardContent>
+      <CardFooter className="flex justify-between">
+        <div className="lg:text-sm text-[10px] ml-2 tracking-tight font-thin order-1 self-end">
           published {formatDate(publishDate)}
         </div>
-        {/* interactions section */}
-        <div className="flex flex-col gap-5 justify-center ">
+        {/* Interactions section */}
+        <div className="flex flex-col gap-5 justify-center">
           <div className="flex space-x-10 border shadow-lg p-2 justify-start rounded-md w-fit">
             <button
               onClick={() => {
@@ -85,26 +116,25 @@ export default function PostCard({
               }}
               className={cn("flex items-center justify-center self-start")}
             >
-              <SlLike className={cn({ "text-app_primary": liked })} size={20} />{" "}
+              <SlLike className={cn({ "text-app_primary": liked })} size={20} />
               <span className={cn("ml-1")}>{postLikes}</span>
             </button>
-            <button className="flex items-center justify-center ">
+            <button
+              onClick={sharePostHandler}
+              className="flex items-center justify-center"
+            >
               <FaRegShareSquare size={20} />
             </button>
             <button
               onClick={() => setShowComments((prev) => !prev)}
-              className="flex items-center justify-center "
+              className="flex items-center justify-center"
             >
               <FaRegCommentAlt size={20} />
             </button>
           </div>
         </div>
       </CardFooter>
-      <motion.div
-        initial={{ opacity: 0, y: -100 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
+      <div
         className={cn(
           "comments-section flex items-center justify-center flex-col",
           {
@@ -113,7 +143,7 @@ export default function PostCard({
         )}
       >
         <Comments postId={postId} />
-      </motion.div>
+      </div>
     </Card>
   );
 }

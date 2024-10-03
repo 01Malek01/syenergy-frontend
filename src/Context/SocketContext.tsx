@@ -6,6 +6,7 @@ import {
   ReactNode,
 } from "react";
 import { io, Socket } from "socket.io-client";
+import { useAuth } from "./AuthContext";
 
 interface SocketContextType {
   socket: Socket | null;
@@ -19,15 +20,19 @@ interface SocketProviderProps {
 
 const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
-
+  const { user: authUser } = useAuth();
   useEffect(() => {
     const newSocket = io(import.meta.env.VITE_BACKEND as string);
     setSocket(newSocket);
+    if (authUser) {
+      newSocket.emit("register", authUser?._id);
+    }
 
     return () => {
       newSocket.disconnect();
+      socket?.removeAllListeners();
     };
-  }, []);
+  }, [authUser]);
 
   return (
     <SocketContext.Provider value={{ socket }}>

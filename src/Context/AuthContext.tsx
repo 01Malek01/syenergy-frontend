@@ -9,19 +9,29 @@ import {
 import { AuthContextType } from "types";
 const AuthContext = createContext<AuthContextType | null>(null);
 function AuthContextProvider({ children }: { children: ReactNode }) {
-  const { user: authUser } = useCheckAuth();
+  const {
+    user: authUser,
+    isLoading: isAuthLoading,
+    isSuccess,
+  } = useCheckAuth();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<AuthContextType["user"] | null>(null);
 
   useEffect(() => {
-    if (authUser) {
+    if (!isAuthLoading && isSuccess) {
       setIsAuthenticated(true);
       setUser(authUser);
     }
-  }, [authUser]);
+  }, [authUser, user, isAuthLoading, isSuccess]);
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, setIsAuthenticated, user, setUser }}
+      value={{
+        isAuthenticated,
+        setIsAuthenticated,
+        user,
+        setUser,
+        isAuthLoading,
+      }}
     >
       {children}
     </AuthContext.Provider>

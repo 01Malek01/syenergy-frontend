@@ -1,14 +1,12 @@
 import { useAuth } from "@/Context/AuthContext";
+import useGetFriends from "@/hooks/api/user/useGetFriends";
+import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { Card, CardHeader } from "../ui/card";
 import ChatPage from "./ChatPage";
-import { cn } from "@/lib/utils";
-import useGetFriends from "@/hooks/api/user/useGetFriends";
-import { useSocket } from "@/Context/SocketContext";
 
 export default function Chat() {
   const { user } = useAuth();
-  const [messages, setMessages] = useState<any>([]);
   const [friendsState, setFriendsState] = useState<any>([]);
   const { friends, isLoading: friendsLoading } = useGetFriends();
   const [selectedUser, setSelectedUser] = useState<any>(null);
@@ -16,31 +14,12 @@ export default function Chat() {
   const [newMessages, setNewMessages] = useState<
     { sender: string; content: string }[]
   >([]);
-  const { socket } = useSocket();
 
   useEffect(() => {
     if (!friendsLoading) {
       setFriendsState(friends);
     }
   }, [friends, friendsLoading]);
-
-  useEffect(() => {
-    if (socket) {
-      socket.on("receiveMessage", (message) => {
-        if (message.sender !== selectedUser?._id) {
-          // Only track new messages if it's from a different user than the one you're currently chatting with
-          setNewMessages((prev) => [...prev, message]);
-        } else {
-          // If the message is from the selected user, add it directly to the chat
-          setMessages((prevMessages) => [...prevMessages, message]);
-        }
-      });
-    }
-
-    return () => {
-      socket?.off("receiveMessage");
-    };
-  }, [socket, selectedUser]);
 
   const removeNotification = (senderId: string) => {
     setNewMessages((prevMessages) =>
@@ -55,8 +34,6 @@ export default function Chat() {
           <ChatPage
             selectedUser={selectedUser}
             senderId={user?._id}
-            messages={messages}
-            setMessages={setMessages}
             setOpenChat={setOpenChat}
             openChat={openChat}
           />

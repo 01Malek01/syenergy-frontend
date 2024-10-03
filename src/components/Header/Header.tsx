@@ -22,12 +22,11 @@ export default function Header() {
 
   useEffect(() => {
     socket.on("followNotification", (data) => {
-      console.log(data);
       if (user?._id === data?.senderId) {
         setNotificationsState((prev) => [...prev, data.message]);
       }
     });
-  }, [user?._id]);
+  }, [user?._id, socket]);
   const clearAllNotifications = async () => {
     await clearNotifications();
     setNotificationsState([]);
@@ -45,7 +44,8 @@ export default function Header() {
               className={cn(
                 "absolute top-2 right-3 bg-red-500 rounded-full h-4 w-4 flex items-center justify-center",
                 {
-                  hidden: notificationsState.length === 0,
+                  hidden:
+                    notificationsState.length === 0 || !notificationsState,
                 }
               )}
             >

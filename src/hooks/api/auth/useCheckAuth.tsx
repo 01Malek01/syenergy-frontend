@@ -2,12 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-type User = {
-  name: string;
-  email: string;
-  isAuthenticated: boolean;
-  _id: string;
-};
 const useCheckAuth = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const checkAuthReq = async () => {
@@ -17,14 +11,19 @@ const useCheckAuth = () => {
       });
       if (res.status === 401) throw new Error("Unauthorized");
       return res.data;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      toast.error(err);
+      toast.error(" An error occurred");
     }
   };
-  const { data: user, isLoading } = useQuery({
+  const {
+    data: user,
+    isLoading,
+    isSuccess,
+  } = useQuery({
     queryFn: checkAuthReq,
     queryKey: ["checkAuth"],
   });
-  return { user, isLoading };
+  return { user, isLoading, isSuccess };
 };
 export default useCheckAuth;

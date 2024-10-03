@@ -5,6 +5,9 @@ import useGetUserById from "@/hooks/api/user/useGetUserById";
 import { toast } from "react-toastify";
 import { useAuth } from "@/Context/AuthContext";
 import FollowButton from "@/components/FollowButton/FollowButton";
+import useGetPostsByUser from "@/hooks/api/post/useGetPostsByUser";
+import PostCard from "@/components/PostCard/PostCard";
+import { Post } from "types";
 
 function UserProfile() {
   const [showPhoto, setShowPhoto] = useState(false);
@@ -12,12 +15,14 @@ function UserProfile() {
   const [userState, setUserState] = useState(user);
   const { user: authUser } = useAuth();
   const [followed, setFollowed] = useState(false);
+  const { posts } = useGetPostsByUser(userState?._id);
 
   useEffect(() => {
     if (isLoading) toast.info("Loading...");
     setUserState(user);
+    console.log(posts, "user profile posts");
     return () => toast.dismiss();
-  }, [user, isLoading]);
+  }, [user, isLoading, posts]);
   useEffect(() => {
     if (authUser) {
       if (user?.followers?.includes(authUser._id)) {
@@ -109,7 +114,9 @@ function UserProfile() {
         <div className="divider w-full h-[1px] bg-black/10 my-6 "></div>
 
         <div className="lower flex flex-col gap-10">
-          <span className="text-2xl font-semibold text-center">Bio</span>
+          {userState?.bio && (
+            <span className="text-2xl font-semibold text-center">Bio</span>
+          )}
           <p className="bio text-center tracking-tight font-md group flex items-center justify-center gap-2">
             {userState?.bio}
           </p>
@@ -117,8 +124,21 @@ function UserProfile() {
 
         {/* User Posts */}
         <div className="user-posts mt-10">
-          <h1 className="text-3xl font-semibold text-center m-10">Posts</h1>
-          posts here
+          <h1 className="text-3xl font-semibold text-center m-10">
+            {userState?.name} posts
+          </h1>
+          {posts?.map((post: Post) => (
+            <PostCard
+              key={post._id}
+              author={userState?.name}
+              authorId={userState?._id}
+              postId={post._id}
+              title={post.title}
+              content={post.content}
+              likes={post.likes}
+              publishDate={post.createdAt}
+            />
+          ))}
         </div>
       </div>
     </div>

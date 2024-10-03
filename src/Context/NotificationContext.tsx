@@ -1,33 +1,49 @@
-import useGetNotifications from "@/hooks/api/user/useGetNotifications";
-import { useContext, useEffect, useState } from "react";
-import { createContext } from "react";
+import {
+  useContext,
+  useEffect,
+  useState,
+  createContext,
+  ReactNode,
+} from "react";
 import { useAuth } from "./AuthContext";
 import { Notification as NotificationType } from "types";
 import { useSocket } from "./SocketContext";
+import useGetNotifications from "@/hooks/api/user/useGetNotifications";
 
-const NotificationContext = createContext(null);
+type NotificationContextType = {
+  messageNotification: number;
+  notificationsState: NotificationType[];
+  setNotificationsState: React.Dispatch<
+    React.SetStateAction<NotificationType[]>
+  >;
+  setMessageNotification: React.Dispatch<React.SetStateAction<number>>;
+};
 
-const NotificationContextProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+const NotificationContext = createContext<NotificationContextType | undefined>(
+  undefined
+);
+
+const NotificationContextProvider = ({ children }: { children: ReactNode }) => {
   const { socket } = useSocket();
   const { user } = useAuth();
-  const [messageNotification, setMessageNotification] = useState(0);
-  const [notificationsState, setNotificationsState] = useState(0);
+  const [messageNotification, setMessageNotification] = useState<number>(0);
+  const [notificationsState, setNotificationsState] = useState<
+    NotificationType[]
+  >([]);
   const { notifications } = useGetNotifications();
+
   useEffect(() => {
     if (notifications && user?.isAuthenticated) {
       setNotificationsState(notifications);
-      const useGetMessageNotification = notifications?.filter(
-        (n: NotificationType) => n.type === "message"
-      );
-      setMessageNotification(useGetMessageNotification?.length);
+      const messageNotifications =
+        notifications.length > 0 &&
+        notifications.filter((n: NotificationType) => n.type === "message");
+      setMessageNotification(messageNotifications?.length || 0);
     }
   }, [notifications, user?.isAuthenticated]);
+
   useEffect(() => {
-    socket?.on("receiveMessage", (message) => {
+    socket?.on("receiveMessage", () => {
       setMessageNotification((prev) => prev + 1);
     });
   }, [socket]);
@@ -46,8 +62,14 @@ const NotificationContextProvider = ({
   );
 };
 
-const useNotificationContext = () => {
-  return useContext(NotificationContext);
+const useNotificationContext = (): NotificationContextType => {
+  const context = useContext(NotificationContext);
+  if (context === undefined) {
+    throw new Error(
+      "useNotificationContext must be used within a NotificationContextProvider"
+    );
+  }
+  return context;
 };
 
 export { useNotificationContext, NotificationContextProvider };

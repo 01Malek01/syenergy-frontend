@@ -30,6 +30,8 @@ function Posts() {
           publishDate={post.createdAt}
           likes={post?.likes}
           postId={post._id}
+          isShared={post?.isShared}
+          sharedFrom={post?.sharedFrom?.name}
         />
       ))}
     </div>

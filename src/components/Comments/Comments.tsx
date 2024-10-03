@@ -105,7 +105,7 @@ export default function Comments({ postId }: { postId: string }) {
                     {...register("comment")}
                     name="comment"
                     id="comment"
-                    className="w-1/2 h-24 outline-none border-b-2 border-slate-500"
+                    className=" w-full md:w-1/2 h-24 outline-none border-b-2 border-slate-500"
                     placeholder="Write a comment"
                   ></textarea>
                 )}
@@ -127,7 +127,7 @@ export default function Comments({ postId }: { postId: string }) {
         postComments.map((comment: PostComment) => (
           <div
             key={comment?._id}
-            className="relative w-1/2 self-start rounded-sm bg-slate-300/60 p-2 my-10 flex flex-col gap-2"
+            className="relative w-full md:w-1/2 self-start rounded-sm bg-slate-300/60 p-2 my-10 flex flex-col gap-2"
           >
             <div className="flex items-center flex-row ">
               <span
@@ -135,14 +135,14 @@ export default function Comments({ postId }: { postId: string }) {
                 className={cn(
                   "order-1 text-sm hover:text-red-400 text-red-600 underline cursor-pointer self-end ml-auto hidden",
                   {
-                    block: user._id === comment?.author,
+                    block: user?._id === comment?.author,
                   }
                 )}
               >
                 Delete
               </span>
               <span className="text-xs font-thin">
-                {user._id === comment?.author ? "You" : comment?.authorName}
+                {user?._id === comment?.author ? "You" : comment?.authorName}
               </span>
             </div>
             {/* Comment content */}

@@ -1,70 +1,82 @@
+import { useAuth } from "@/Context/AuthContext";
+import useGetMessages from "@/hooks/api/chat/useGetMessages";
+import useSendMessage from "@/hooks/api/chat/useSendMessage";
+import { cn } from "@/lib/utils";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { IoSend } from "react-icons/io5";
+import { Button } from "../ui/button";
 import { Card } from "../ui/card";
 import { Form, FormField, FormItem } from "../ui/form";
 import { Textarea } from "../ui/textarea";
-import { Button } from "../ui/button";
-import { IoSend } from "react-icons/io5";
-import useSendMessage from "@/hooks/api/chat/useSendMessage";
-import useGetMessages from "@/hooks/api/chat/useGetMessages";
-import { useEffect, useRef } from "react";
-import { cn } from "@/lib/utils";
-import { useAuth } from "@/Context/AuthContext";
 import { useSocket } from "@/Context/SocketContext";
 
-export default function ChatPage({
-  selectedUser,
-  messages,
-  setOpenChat,
-  openChat,
-  setMessages,
-}: {
-  socket: any;
-  senderId: string;
+interface ChatPageProps {
   selectedUser: {
     name: string;
     _id: string;
     email: string;
     profilePicture: string;
   };
-  messages: any;
-  setMessages: any;
-  setOpenChat: any;
+  setOpenChat: (open: boolean) => void;
   openChat: boolean;
-}) {
-  const form = useForm({ initialValues: { message: "" } });
+}
+
+interface Message {
+  sender: string;
+  content: string;
+}
+
+export default function ChatPage({
+  selectedUser,
+  setOpenChat,
+  openChat,
+}: ChatPageProps) {
+  const form = useForm<{ message: string }>({ defaultValues: { message: "" } });
   const messagesEnd = useRef<HTMLDivElement>(null);
   const { user: authUser } = useAuth();
   const { handleSubmit, register, reset } = form;
   const { sendMessage } = useSendMessage();
+  const { socket } = useSocket();
+  const [messages, setMessages] = useState<Message[]>([]);
+
   const { messages: fetchedMessages, isLoading } = useGetMessages(
     selectedUser?._id
   );
-  const { socket } = useSocket();
-  const sendMessageHandler = async function (message: string) {
+
+  const sendMessageHandler = async (data: { message: string }) => {
     reset();
     const res = await sendMessage({
       receiverId: selectedUser?._id,
-      content: message?.message,
+      content: data.message,
     });
-    setMessages((prev: any) => [...prev, res.message]);
+    setMessages((prev) => [...prev, res.message]);
     scrollIntoView();
   };
+
+  useEffect(() => {
+    const handleReceiveMessage = (message: { newMessage: Message }) => {
+      setMessages((prev) => [...prev, message.newMessage]);
+    };
+
+    socket?.on("receiveMessage", handleReceiveMessage);
+
+    return () => {
+      socket?.off("receiveMessage", handleReceiveMessage);
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    if (fetchedMessages) {
+      setMessages(fetchedMessages?.messages);
+    }
+  }, [fetchedMessages]);
 
   const scrollIntoView = () => {
     if (messagesEnd.current) {
       messagesEnd.current.scrollIntoView({ behavior: "smooth" });
     }
   };
-  useEffect(() => {
-    socket?.on("receiveMessage", (message) => {
-      setMessages((prev: any) => [...prev, message]);
-    });
-  }, [socket]);
-  useEffect(() => {
-    if (fetchedMessages) {
-      setMessages(fetchedMessages?.messages);
-    }
-  }, [fetchedMessages, selectedUser?.name, setMessages]);
 
   useEffect(() => {
     scrollIntoView();
@@ -84,7 +96,7 @@ export default function ChatPage({
               Loading...
             </div>
           ) : (
-            messages?.map((message: any, index: number) => (
+            messages?.map((message, index) => (
               <Card
                 key={index}
                 className={cn("sent p-2", {
