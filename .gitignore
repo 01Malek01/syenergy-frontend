@@ -22,3 +22,15 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Build directories and files
+build
+dist
+
+# IDE directories and files
+.vscode
+*.code-workspace
+
+.env
+.env.local
+package-lock.json
