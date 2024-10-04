@@ -4,12 +4,13 @@ import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { Card, CardHeader } from "../ui/card";
 import ChatPage from "./ChatPage";
+import { User } from "types";
 
 export default function Chat() {
   const { user } = useAuth();
-  const [friendsState, setFriendsState] = useState<any>([]);
+  const [friendsState, setFriendsState] = useState<User[]>([]);
   const { friends, isLoading: friendsLoading } = useGetFriends();
-  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [openChat, setOpenChat] = useState(false);
   const [newMessages, setNewMessages] = useState<
     { sender: string; content: string }[]
@@ -33,7 +34,7 @@ export default function Chat() {
         <div className={cn("w-full-10")}>
           <ChatPage
             selectedUser={selectedUser}
-            senderId={user?._id}
+            senderId={user?._id as string}
             setOpenChat={setOpenChat}
             openChat={openChat}
           />
@@ -46,14 +47,14 @@ export default function Chat() {
                 </div>
               ) : friendsState?.length > 0 ? (
                 friendsState
-                  ?.filter((u: any) => u?._id !== user?._id)
-                  .map((friend: any) => (
+                  ?.filter((u: User) => u?._id !== user?._id)
+                  .map((friend: User) => (
                     <Card
                       key={friend?._id}
                       onClick={() => {
                         setSelectedUser(friend);
                         setOpenChat(true);
-                        removeNotification(friend?._id); // Remove notification when opening chat with the user
+                        removeNotification(friend?._id as string); // Remove notification when opening chat with the user
                       }}
                       className="cursor-pointer my-5 hover:bg-slate-600/10"
                     >

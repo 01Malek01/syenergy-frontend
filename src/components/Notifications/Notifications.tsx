@@ -1,3 +1,5 @@
+import { Notification } from "types";
+
 function Notifications({
   notifications,
   clear,

@@ -70,7 +70,7 @@ export default function PostCard({
   }, [isSuccess, isError]);
 
   useEffect(() => {
-    if (authUser && likes.includes(authUser._id)) {
+    if (authUser && likes.includes(authUser._id as string)) {
       setLiked(true);
     }
   }, [authUser, likes]);

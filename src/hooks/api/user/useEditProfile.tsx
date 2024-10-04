@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 
 const useEditProfile = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const editProfileReq = async (data) => {
+  const editProfileReq = async (data: { name: string; bio: string }) => {
     try {
       const res = await axios.put(
         `${backendUrl}/user/profile`,
@@ -18,7 +18,13 @@ const useEditProfile = () => {
       );
       return res.data;
     } catch (err) {
-      toast.error(err);
+      if (axios.isAxiosError(err)) {
+        toast.error(err.response?.data.message);
+      } else if (err instanceof Error) {
+        toast.error(err.message);
+      } else {
+        toast.error("An unknown error occurred");
+      }
     }
   };
 

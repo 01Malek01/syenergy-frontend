@@ -10,16 +10,13 @@ import { Card } from "../ui/card";
 import { Form, FormField, FormItem } from "../ui/form";
 import { Textarea } from "../ui/textarea";
 import { useSocket } from "@/Context/SocketContext";
+import { User } from "types";
 
 interface ChatPageProps {
-  selectedUser: {
-    name: string;
-    _id: string;
-    email: string;
-    profilePicture: string;
-  };
+  selectedUser: User | null;
   setOpenChat: (open: boolean) => void;
   openChat: boolean;
+  senderId: string;
 }
 
 interface Message {
@@ -41,13 +38,13 @@ export default function ChatPage({
   const [messages, setMessages] = useState<Message[]>([]);
 
   const { messages: fetchedMessages, isLoading } = useGetMessages(
-    selectedUser?._id
+    selectedUser?._id as string
   );
 
   const sendMessageHandler = async (data: { message: string }) => {
     reset();
     const res = await sendMessage({
-      receiverId: selectedUser?._id,
+      receiverId: selectedUser?._id as string,
       content: data.message,
     });
     setMessages((prev) => [...prev, res.message]);

@@ -6,8 +6,8 @@ import Login from "@/components/Login"; // Assuming it's in the same directory
 import Signup from "@/components/SignUp"; // Assuming it's in the same directory
 
 function Auth() {
-  const [overlayMove, setOverlayMove] = useState(false);
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const [overlayMove, setOverlayMove] = useState<boolean>(false);
+  const backendUrl = import.meta.env.VITE_BACKEND_URL as string;
 
   return (
     <div className="wrapper w-full h-screen justify-center items-center flex ">
@@ -71,7 +71,7 @@ function Auth() {
         <Signup overlayMove={overlayMove} backendUrl={backendUrl} />
 
         {/* Login Form */}
-        <Login overlayMove={overlayMove} backendUrl={backendUrl} />
+        <Login overlayMove={overlayMove} />
       </div>
     </div>
   );

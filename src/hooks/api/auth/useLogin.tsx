@@ -13,13 +13,18 @@ const useLogin = () => {
 
       return res.data;
     } catch (err) {
-      toast.error(err);
-      throw err;
+      if (axios.isAxiosError(err)) {
+        toast.error(err.response?.data.message);
+      } else if (err instanceof Error) {
+        toast.error(err.message);
+      } else {
+        toast.error("An unknown error occurred");
+      }
     }
   };
   const { mutateAsync: login, isSuccess } = useMutation({
     mutationFn: loginReq,
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast.success("Login Successful");
       navigate("/");
     },

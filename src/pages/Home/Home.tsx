@@ -34,7 +34,7 @@ function Home() {
   useEffect(() => {
     if (users && users.length > 0) {
       users.forEach((user) => {
-        if (user?.followers?.includes(authUser?._id)) {
+        if (user?.followers?.includes(authUser?._id as string)) {
           setFollowed(true);
         }
       });
@@ -99,7 +99,7 @@ function Home() {
                           {dayjs(createdAt).format("DD/MM/YYYY")}
                         </div>
                         <FollowButton
-                          targetUserId={_id}
+                          targetUserId={_id as string}
                           followed={followed}
                           setFollowed={setFollowed}
                         />
@@ -123,6 +123,8 @@ function Home() {
           menuOpen={menuOpen}
           users={users}
           isLoading={isLoading}
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           authUser={authUser}
           followed={followed}
           setFollowed={setFollowed}

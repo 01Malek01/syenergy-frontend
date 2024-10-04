@@ -21,9 +21,10 @@ import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
+// Define the schema using zod
 const formSchema = z
   .object({
-    name: z
+    username: z
       .string()
       .min(3, "Username must be at least 3 characters long")
       .max(20, "Username must be at most 20 characters long"),
@@ -36,7 +37,14 @@ const formSchema = z
     path: ["confirmPassword"],
   });
 
-const SignupForm = ({ overlayMove, backendUrl }) => {
+// Define the SignupForm component
+const SignupForm = ({
+  overlayMove,
+  backendUrl,
+}: {
+  overlayMove: boolean;
+  backendUrl: string;
+}) => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const { signup, isSuccess } = useSignup();
@@ -57,7 +65,13 @@ const SignupForm = ({ overlayMove, backendUrl }) => {
     formState: { errors },
   } = form;
 
-  const handleSignup = (data) => {
+  // Update the handleSignup function to match the schema
+  const handleSignup = (data: {
+    username: string; // Changed from 'name' to 'username'
+    email: string;
+    password: string;
+    confirmPassword: string;
+  }) => {
     signup(data);
     if (isSuccess) {
       navigate("/auth");
@@ -84,7 +98,7 @@ const SignupForm = ({ overlayMove, backendUrl }) => {
         >
           <FormField
             control={control}
-            name="name"
+            name="username"
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel>Username</FormLabel>

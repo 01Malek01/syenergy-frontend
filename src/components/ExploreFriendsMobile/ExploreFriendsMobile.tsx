@@ -65,7 +65,7 @@ export default function ExploreFriendsMobile({
                       {dayjs(createdAt).format("DD/MM/YYYY")}
                     </div>
                     <FollowButton
-                      targetUserId={_id}
+                      targetUserId={_id as string}
                       followed={followed}
                       setFollowed={setFollowed}
                     />

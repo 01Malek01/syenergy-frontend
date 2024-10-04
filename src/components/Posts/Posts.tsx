@@ -4,7 +4,11 @@ import { usePosts } from "@/Context/PostsContext";
 import { Post } from "types";
 
 function Posts() {
-  const { posts, setPosts, isLoading } = usePosts();
+  const { posts, setPosts, isLoading } = usePosts() ?? {
+    posts: [],
+    isLoading: true,
+    setPosts: () => {},
+  };
   useEffect(() => {
     if (!isLoading) {
       setPosts(posts);

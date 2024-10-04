@@ -11,7 +11,13 @@ const useLogout = () => {
       const res = await axios.post(`${backendUrl}/auth/logout`);
       return res.data;
     } catch (err) {
-      toast.error(err);
+      if (axios.isAxiosError(err)) {
+        toast.error(err.response?.data.message);
+      } else if (err instanceof Error) {
+        toast.error(err.message);
+      } else {
+        toast.error("An unknown error occurred");
+      }
     }
   };
   const { mutateAsync: logout, isPending } = useMutation({

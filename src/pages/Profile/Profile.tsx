@@ -9,7 +9,7 @@ import { useUploadProfilePic } from "@/hooks/api/user/useUploadProfilePic";
 import { cn } from "../../lib/utils";
 import useGetUserPosts from "@/hooks/api/user/useGetUserPosts";
 import PostCard from "@/components/PostCard/PostCard";
-import { Post } from "types";
+import { Post, User } from "types"; // Ensure that 'types' has the correct exports
 import useEditProfile from "@/hooks/api/user/useEditProfile";
 
 function Profile() {
@@ -17,7 +17,7 @@ function Profile() {
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingBio, setIsEditingBio] = useState(false);
   const { uploadProfilePic, isPending } = useUploadProfilePic();
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState<File | null>(null); // Use File type for file
   const { userPosts, isLoading: isLoadingPosts } = useGetUserPosts();
   const [userPostsState, setUserPostsState] = useState<Post[]>([]);
   const {
@@ -31,25 +31,52 @@ function Profile() {
       setUserPostsState(userPosts);
     }
   }, [userPosts, isLoadingPosts]);
+
   useEffect(() => {
     console.log(user);
   }, [user]);
+
+  const inputSchema = z.object({
+    name: z.string().min(3, "Username must be at least 3 characters long"),
+    bio: z.string().optional(),
+  });
+
+  const form = useForm<z.infer<typeof inputSchema>>({
+    defaultValues: {
+      name: user?.name,
+      bio: user?.bio,
+    },
+    resolver: zodResolver(inputSchema),
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = form;
+
   const saveName = async (data: z.infer<typeof inputSchema>) => {
-    await editProfile({ name: data.name });
-    setUser((prevUser) => ({ ...prevUser, name: data.name }));
+    // Ensure bio is defined; if it's undefined, provide a default empty string
+    const bioToSave = user?.bio ?? ""; // Use nullish coalescing to provide default value
+    await editProfile({ name: data.name, bio: bioToSave });
+    setUser((prevUser: User) => ({ ...prevUser, name: data.name }));
   };
 
   const saveBio = async (data: z.infer<typeof inputSchema>) => {
-    await editProfile({ bio: data.bio });
-    setUser((prevUser) => ({ ...prevUser, bio: data.bio }));
+    // Ensure name is defined; if it's undefined, provide a default empty string
+    const nameToSave = user?.name ?? ""; // Use nullish coalescing to provide default value
+    await editProfile({ name: nameToSave, bio: data.bio || "" }); // Handle possible undefined bio
+    setUser((prevUser: User) => ({ ...prevUser, bio: data.bio || "" }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files && e.target.files[0];
-    if (!selectedFile) return;
-    const formData = new FormData();
-    formData.append("profilePic", selectedFile);
-    uploadProfilePic(formData);
+    const selectedFile = e.target.files?.[0] || null; // Use optional chaining for safer access
+    if (selectedFile) {
+      setFile(selectedFile);
+      const formData = new FormData();
+      formData.append("profilePic", selectedFile);
+      uploadProfilePic(formData);
+    }
   };
 
   useEffect(() => {
@@ -66,25 +93,6 @@ function Profile() {
     }
     return () => toast.dismiss();
   }, [isPendingEdit]);
-
-  const inputSchema = z.object({
-    name: z.string().min(3, "Username must be at least 3 characters long"),
-    bio: z.string().optional(),
-  });
-
-  const form = useForm({
-    defaultValues: {
-      name: user?.name,
-      bio: user?.bio,
-    },
-    resolver: zodResolver(inputSchema),
-  });
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = form;
 
   return (
     <div className="wrapper p-10 mt-10 bg-app_surface">
@@ -150,7 +158,7 @@ function Profile() {
               <div className="loader"></div>
             ) : (
               <img
-                src={`${user?.profilePic || "/logo.jpg"}`}
+                src={user?.profilePic || "/logo.jpg"}
                 alt="profile"
                 className="rounded-full shadow-sm"
               />
@@ -220,15 +228,16 @@ function Profile() {
               Loading...
             </div>
           ) : (
-            userPostsState?.map((post: Post) => (
+            userPostsState.map((post: Post) => (
               <PostCard
-                key={post?._id}
-                title={post?.title}
-                content={post?.content}
-                author={post?.author?.name}
-                publishDate={post?.createdAt}
-                likes={post?.likes}
-                postId={post?._id}
+                authorId={post.author?._id}
+                key={post._id}
+                title={post.title}
+                content={post.content}
+                author={post.author?.name}
+                publishDate={post.createdAt}
+                likes={post.likes}
+                postId={post._id}
               />
             ))
           )}

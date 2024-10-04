@@ -17,12 +17,18 @@ export interface Post {
   _id: string;
   title: string;
   content: string;
-  author: string;
+  author: {
+    name: string;
+    _id: string;
+  };
   createdAt: string;
-  likes: number;
+  likes: string[];
   postId?: string;
   isShared?: boolean;
-  sharedFrom?: string;
+  sharedFrom?: {
+    name: string;
+    _id: string;
+  };
 }
 
 export type AuthContextType = {
